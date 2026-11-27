@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__WRAPPED_TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ---------- Fargene (bytt her) ---------- */
+:root {
+  color-scheme: light;
+  --cream: #fffdf1;
+  --pink: #e1aec4;
+  --burgundy: #5a151b;
+  --blue: #cdd7e2;
+  --brown: #522e25;
+  --red: #9c3a2b;
+  --lavender: #8b82c2;
+  --navy: #11225f;
+  --black: #000000;
+
+  /* Del av døgnet: natt -> morgen -> ettermiddag -> kveld */
+  --natt: var(--navy);
+  --morgen: var(--lavender);
+  --ettermiddag: var(--pink);
+  --kveld: var(--burgundy);
+
+  --font: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --wrap: 1120px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+
+/* Hver seksjon er et fargepar: --bg + --fg */
+.sec { --bg: var(--cream); --fg: var(--burgundy); }
+.sec, .col {
+  background: var(--bg);
+  color: var(--fg);
+  --soft: color-mix(in oklab, var(--fg) 74%, var(--bg));
+  --line: color-mix(in oklab, var(--fg) 16%, var(--bg));
+  --axis: color-mix(in oklab, var(--fg) 38%, var(--bg));
+}
+.hero     { --bg: var(--burgundy); --fg: var(--pink); }
+.time     { --bg: var(--cream);    --fg: var(--burgundy); }
+.day      { --bg: var(--blue);     --fg: var(--burgundy); }
+.records  { --bg: var(--pink);     --fg: var(--burgundy); }
+.discover { --bg: var(--brown);    --fg: var(--blue); }
+.foot     { --bg: var(--burgundy); --fg: var(--pink); }
+.c-pink   { --bg: var(--pink);     --fg: var(--burgundy); --rank: var(--burgundy); }
+.c-blue   { --bg: var(--blue);     --fg: var(--burgundy); --rank: var(--burgundy); }
+.c-red    { --bg: var(--red);      --fg: var(--cream);    --rank: var(--pink); }
+
+/* ---------- Grunnlag ---------- */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--burgundy);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.inner { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[hidden] { display: none !important; }
+
+h2 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  margin: 0 0 12px;
+}
+h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 4px; line-height: 1.2; }
+.lead { font-size: 19px; max-width: 60ch; margin: 0 0 40px; color: var(--soft); }
+.sub { font-size: 14px; color: var(--soft); margin: 0 0 16px; }
+.block { margin-top: 64px; }
+
+/* ---------- Topp ---------- */
+.top {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--cream);
+  border-bottom: 1px solid color-mix(in oklab, var(--burgundy) 14%, var(--cream));
+}
+.top .inner { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+.brand { font-weight: 900; font-size: 22px; letter-spacing: -0.04em; }
+.picker { display: flex; align-items: center; gap: 8px; }
+.picker select, .picker button {
+  font: inherit; font-size: 15px; font-weight: 600; color: var(--burgundy);
+  background: var(--cream);
+  border: 1.5px solid var(--burgundy);
+  height: 40px; border-radius: 0;
+}
+.picker select { padding: 0 32px 0 12px; appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--burgundy) 50%), linear-gradient(135deg, var(--burgundy) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 17px, calc(100% - 12px) 17px;
+  background-size: 5px 5px; background-repeat: no-repeat; }
+.picker select:disabled { opacity: .4; cursor: default; }
+.picker button { width: 40px; cursor: pointer; font-size: 20px; line-height: 1; }
+.picker button:disabled { opacity: .3; cursor: default; }
+.picker button:not(:disabled):hover, .picker select:not(:disabled):hover { background: var(--pink); }
+
+/* ---------- Hero ---------- */
+.hero { padding: clamp(48px, 9vw, 112px) 0 clamp(48px, 7vw, 88px); }
+.hero-title {
+  font-size: clamp(72px, 16vw, 216px);
+  font-weight: 900; letter-spacing: -0.06em; line-height: 0.82;
+  margin: 0 0 16px; margin-left: -0.04em;
+}
+.hero-range { font-size: 17px; margin: 0 0 clamp(40px, 6vw, 72px); color: var(--soft); }
+.hero-figure { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.hero-num { font-size: clamp(56px, 10vw, 128px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.85; }
+.hero-unit { font-size: clamp(18px, 2.2vw, 24px); font-weight: 600; line-height: 1.1; padding-bottom: 6px; }
+.hero-sub { font-size: 19px; margin: 16px 0 40px; color: var(--soft); }
+.stats { display: flex; flex-wrap: wrap; gap: 24px 48px; margin: 0; padding-top: 24px; border-top: 1.5px solid var(--line); }
+.stats div { min-width: 120px; }
+.stats dd { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.stats dt { font-size: 14px; color: var(--soft); }
+
+/* ---------- Topplister ---------- */
+.tops { display: grid; grid-template-columns: repeat(3, 1fr); }
+.col { padding: 40px clamp(20px, 3vw, 36px) 48px; min-width: 0; }
+.col h2 { font-size: clamp(32px, 3.6vw, 44px); }
+.rank { list-style: none; margin: 24px 0 0; padding: 0; }
+.rank li { display: grid; grid-template-columns: 40px 1fr auto; gap: 0 10px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); }
+.rank li:first-child { border-top: 0; }
+.rank .pos { font-size: 22px; font-weight: 800; color: var(--rank); letter-spacing: -0.03em; }
+.rank .name { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rank .by { display: block; font-size: 14px; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank .val { font-size: 15px; font-weight: 600; text-align: right; }
+.rank li:first-child .name { font-size: 20px; }
+.empty { color: var(--soft); margin-top: 24px; }
+
+/* ---------- Seksjoner ---------- */
+.time, .day, .records, .discover { padding: clamp(56px, 8vw, 96px) 0; }
+.chart { width: 100%; position: relative; }
+.chart svg { display: block; overflow: visible; }
+.grid { stroke: var(--line); stroke-width: 1; }
+.axis { stroke: var(--axis); stroke-width: 1; }
+.tick { fill: var(--soft); font-size: 12px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+.hit { fill: transparent; cursor: default; outline: none; }
+.bar:hover path, .bar:focus-within path { opacity: .72; }
+.hit:focus-visible { stroke: var(--fg); stroke-width: 1.5; }
+.cell:hover, .cell:focus-visible { stroke: var(--fg); stroke-width: 1.5; outline: none; }
+
+.buckets { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0 24px; margin-top: 16px; }
+.bucket { padding: 12px 0; border-top: 1.5px solid var(--line); min-width: 0; }
+.bucket .when { font-size: 14px; color: var(--soft); }
+.bucket .name { font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bucket .by { font-size: 14px; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+
+.heat-legend { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--soft); margin-top: 8px; }
+.heat-legend span.ramp { width: 120px; height: 10px;
+  background: linear-gradient(to right, color-mix(in oklab, var(--burgundy) 8%, var(--cream)), var(--burgundy)); }
+
+/* Segmentert stolpe: én helhet delt i natt/morgen/ettermiddag/kveld */
+.seg { display: flex; gap: 2px; height: 28px; }
+.seg > div { display: flex; align-items: center; font-size: 13px; font-weight: 700; min-width: 0; white-space: nowrap; overflow: hidden; }
+.seg .lbl { padding: 0 8px; flex: none; }
+.seg > div:first-child { border-radius: 4px 0 0 4px; }
+.seg > div:last-child { border-radius: 0 4px 4px 0; }
+.seg > div:hover { filter: brightness(1.12); }
+.seg .natt { background: var(--natt); color: var(--cream); }
+.seg .morgen { background: var(--morgen); color: var(--black); }
+.seg .ettermiddag { background: var(--ettermiddag); color: var(--burgundy); }
+.seg .kveld { background: var(--kveld); color: var(--cream); }
+.seg-big { height: 44px; }
+.seg-big > div { font-size: 15px; }
+.seg-big .lbl { padding: 0 12px; }
+
+.parts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 20px; }
+.part h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; }
+.key { width: 12px; height: 12px; flex: none; border-radius: 2px; display: inline-block; }
+.key.natt { background: var(--natt); } .key.morgen { background: var(--morgen); }
+.key.ettermiddag { background: var(--ettermiddag); } .key.kveld { background: var(--kveld); }
+.part .when { font-size: 14px; color: var(--soft); margin-bottom: 8px; }
+.part .line { font-size: 15px; line-height: 1.35; margin: 6px 0 0; overflow-wrap: anywhere; }
+.part .line b { display: block; font-size: 13px; font-weight: 500; color: var(--soft); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; margin: 0 0 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.trend { display: grid; grid-template-columns: 64px 1fr; gap: 6px 12px; align-items: center; }
+.trend .lab { font-size: 13px; color: var(--soft); text-align: right; font-variant-numeric: tabular-nums; }
+.trend .seg { height: 24px; }
+.trend .seg > div { font-size: 12px; }
+.trend .seg .lbl { padding: 0 6px; }
+
+/* Rekorder */
+.facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 48px; margin-top: 32px; }
+.fact { border-top: 1.5px solid var(--line); padding-top: 16px; min-width: 0; }
+.fact .label { font-size: 15px; color: var(--soft); }
+.fact .big { font-size: clamp(30px, 4.4vw, 52px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; margin: 4px 0 8px; overflow-wrap: anywhere; }
+.fact .detail { font-size: 16px; }
+
+.newlist { list-style: none; padding: 0; margin: 24px 0 0; columns: 2; column-gap: 48px; }
+.newlist li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid var(--line); break-inside: avoid; }
+.newlist .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.newlist .val { color: var(--soft); white-space: nowrap; }
+
+.foot { padding: 40px 0 56px; font-size: 15px; }
+.foot p { margin: 0; max-width: 70ch; }
+
+/* Tooltip */
+#tip {
+  position: fixed; z-index: 50; pointer-events: none;
+  background: var(--cream); color: var(--burgundy);
+  border: 1.5px solid var(--burgundy);
+  padding: 8px 10px; font-size: 13px; line-height: 1.35;
+  max-width: 260px; opacity: 0; transition: opacity .08s;
+}
+#tip.on { opacity: 1; }
+#tip .t { color: color-mix(in oklab, var(--burgundy) 72%, var(--cream)); }
+#tip .r { display: flex; align-items: center; gap: 6px; }
+#tip .r i { width: 12px; height: 3px; border-radius: 2px; flex: none; }
+#tip strong { font-size: 15px; font-weight: 800; }
+
+@media (max-width: 900px) {
+  .tops { grid-template-columns: 1fr; }
+  .two { grid-template-columns: 1fr; }
+  .parts { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .facts { grid-template-columns: 1fr; }
+  .newlist { columns: 1; }
+  .picker { width: 100%; }
+  .picker select { flex: 1; min-width: 0; }
+  .stats div { min-width: 40%; }
+  .trend { grid-template-columns: 44px 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <div class="brand" id="brand"></div>
+    <div class="picker">
+      <button id="prev" type="button" aria-label="Forrige periode">‹</button>
+      <label class="sr" for="year">Velg år</label>
+      <select id="year"></select>
+      <label class="sr" for="month">Velg måned</label>
+      <select id="month"></select>
+      <button id="next" type="button" aria-label="Neste periode">›</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="sec hero">
+    <div class="inner">
+      <h1 class="hero-title" id="title"></h1>
+      <p class="hero-range" id="range"></p>
+      <div class="hero-figure"><span class="hero-num" id="minutes"></span><span class="hero-unit">minutter<br>musikk</span></div>
+      <p class="hero-sub" id="hours"></p>
+      <dl class="stats" id="stats"></dl>
+    </div>
+  </section>
+
+  <section class="tops" aria-label="Topplister">
+    <div class="col c-pink"><h2>Topplåter</h2><p class="sub">Flest avspillinger</p><ol class="rank" id="tracks"></ol></div>
+    <div class="col c-blue"><h2>Toppartister</h2><p class="sub">Flest minutter</p><ol class="rank" id="artists"></ol></div>
+    <div class="col c-red"><h2>Toppalbum</h2><p class="sub">Flest minutter</p><ol class="rank" id="albums"></ol></div>
+  </section>
+
+  <section class="sec time">
+    <div class="inner">
+      <h2>Over tid</h2>
+      <p class="sub" id="time-sub"></p>
+      <div class="chart" id="timeline"></div>
+      <div class="block" id="bucket-block">
+        <h3 id="bucket-title"></h3>
+        <div class="buckets" id="buckets"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec day">
+    <div class="inner">
+      <h2>Døgnet</h2>
+      <p class="lead" id="day-lead"></p>
+      <div class="two">
+        <div>
+          <h3>Minutter per time</h3>
+          <p class="sub">Når på døgnet du hører mest</p>
+          <div class="chart" id="hours-chart"></div>
+        </div>
+        <div>
+          <h3>Uka, time for time</h3>
+          <p class="sub">Mørkere rute betyr flere minutter</p>
+          <div class="chart" id="heat"></div>
+          <div class="heat-legend"><span>Færre</span><span class="ramp"></span><span>Flere</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3>Natt, morgen, ettermiddag og kveld</h3>
+        <p class="sub">Hvordan lyttingen fordeler seg, og hva du hører på når</p>
+        <div class="seg seg-big" id="seg"></div>
+        <div class="parts" id="parts"></div>
+      </div>
+      <div class="block" id="trend-block">
+        <h3>Slik har døgnet ditt endret seg</h3>
+        <p class="sub" id="trend-sub"></p>
+        <div class="legend" id="trend-legend"></div>
+        <div class="trend" id="trend"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec records">
+    <div class="inner">
+      <h2>Rekorder</h2>
+      <div class="facts" id="facts"></div>
+    </div>
+  </section>
+
+  <section class="sec discover" id="discover">
+    <div class="inner">
+      <h2>Nye artister</h2>
+      <p class="sub">Artister du hørte for første gang i denne perioden, etter minutter</p>
+      <ol class="newlist" id="newlist"></ol>
+    </div>
+  </section>
+</main>
+
+<footer class="sec foot"><div class="inner"><p id="foot"></p></div></footer>
+<div id="tip" role="tooltip"></div>
+
+<script id="wrapped-data" type="application/json">__WRAPPED_DATA__</script>
+<script>
+(() => {
+"use strict";
+const DATA = JSON.parse(document.getElementById("wrapped-data").textContent);
+const P = DATA.data;
+const MONTHS = ["januar","februar","mars","april","mai","juni","juli","august","september","oktober","november","desember"];
+const MON = ["jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des"];
+const WEEKDAYS = ["mandag","tirsdag","onsdag","torsdag","fredag","lørdag","søndag"];
+const WD = ["man","tir","ons","tor","fre","lør","søn"];
+const PARTS = ["natt","morgen","ettermiddag","kveld"];
+const PART_TIME = {natt: "00–06", morgen: "06–12", ettermiddag: "12–18", kveld: "18–24"};
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- små hjelpere ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString("nb-NO");
+const fmt1 = n => n.toLocaleString("nb-NO", {maximumFractionDigits: 1});
+const pct = x => Math.round(x * 100) + " %";
+const pad = n => String(n % 24).padStart(2, "0");
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function fmtDate(iso) { const [y, m, d] = iso.split("-").map(Number); return `${d}. ${MONTHS[m - 1]} ${y}`; }
+function fmtTick(v, compact) { return compact && v ? fmt1(v / 1000) + "k" : fmt(v); }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function spotifyUrl(uri) { const m = /^spotify:track:([A-Za-z0-9]+)$/.exec(uri || ""); return m ? "https://open.spotify.com/track/" + m[1] : null; }
+
+function h(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k === "style") Object.assign(e.style, v);
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) e.append(kid);
+  return e;
+}
+const NS = "http://www.w3.org/2000/svg";
+function s(tag, attrs = {}, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+/* ---------- tooltip ---------- */
+const tip = $("tip");
+function showTip(content, x, y) {
+  tip.replaceChildren();
+  if (content.title) tip.append(h("div", {class: "t", text: content.title}));
+  for (const r of content.rows) {
+    tip.append(h("div", {class: "r"},
+      r.color ? h("i", {style: {background: r.color}}) : null,
+      h("strong", {text: r.value}),
+      r.name ? h("span", {text: r.name}) : null));
+  }
+  tip.classList.add("on");
+  const w = tip.offsetWidth, hh = tip.offsetHeight;
+  let left = x + 14, top = y - hh - 12;
+  if (left + w > innerWidth - 8) left = x - w - 14;
+  if (top < 8) top = y + 16;
+  tip.style.left = Math.max(8, left) + "px";
+  tip.style.top = top + "px";
+}
+function hideTip() { tip.classList.remove("on"); }
+function attachTip(el, contentFn) {
+  el.addEventListener("pointermove", e => showTip(contentFn(), e.clientX, e.clientY));
+  el.addEventListener("pointerleave", hideTip);
+  el.addEventListener("focus", () => { const b = el.getBoundingClientRect(); showTip(contentFn(), b.left + b.width / 2, b.top); });
+  el.addEventListener("blur", hideTip);
+}
+addEventListener("scroll", hideTip, {passive: true});
+
+/* ---------- diagrammer ---------- */
+function niceStep(max, count) {
+  const raw = max / count, p = 10 ** Math.floor(Math.log10(raw)), n = raw / p;
+  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p;
+}
+function barPath(x, y, w, hgt) {
+  const r = Math.min(4, w / 2, hgt);
+  return `M${x},${y + hgt}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + hgt}Z`;
+}
+
+// Søylediagram. items: [{value, label, color?}], tipFn(item) -> {title, rows}
+function columnChart(box, items, {height = 220, xLabel, tipFn, aria}) {
+  box.replaceChildren();
+  const W = Math.max(260, box.clientWidth), H = height;
+  const m = {l: 44, r: 4, t: 10, b: 26}, pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const max = Math.max(0, ...items.map(d => d.value));
+  const step = niceStep(max || 1, 4), yMax = Math.max(step, Math.ceil(max / step) * step);
+  const svg = s("svg", {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": aria});
+  for (let v = 0; v <= yMax + 1e-9; v += step) {
+    const y = m.t + ph - v / yMax * ph;
+    svg.append(s("line", {x1: m.l, x2: W - m.r, y1: y, y2: y, class: v === 0 ? "axis" : "grid"}));
+    svg.append(s("text", {x: m.l - 8, y: y + 4, class: "tick", "text-anchor": "end"}, fmtTick(v, yMax >= 10000)));
+  }
+  const slot = pw / items.length, bw = Math.max(1, Math.min(24, slot - 2));
+  const focusable = items.length <= 40;
+  let lastX = -Infinity;
+  items.forEach((d, i) => {
+    const x0 = m.l + i * slot, x = x0 + (slot - bw) / 2, bh = d.value / yMax * ph;
+    const g = s("g", {class: "bar"});
+    if (bh > 0) {
+      const p = s("path", {d: barPath(x, m.t + ph - bh, bw, bh)});
+      p.style.fill = d.color || "var(--fg)";
+      g.append(p);
+    }
+    const hit = s("rect", {x: x0, y: m.t, width: slot, height: ph, class: "hit"});
+    const content = () => tipFn(d);
+    if (focusable) { hit.setAttribute("tabindex", "0"); const c = content(); hit.setAttribute("aria-label", `${c.title}: ${c.rows[0].value}`); }
+    attachTip(hit, content);
+    g.append(hit);
+    svg.append(g);
+    const lab = xLabel(d, i), cx = x0 + slot / 2;
+    if (lab && cx - lastX >= 34) { svg.append(s("text", {x: cx, y: H - 6, class: "tick", "text-anchor": "middle"}, lab)); lastX = cx; }
+  });
+  box.append(svg);
+}
+
+// Ukedag x time
+function heatmap(box, matrix) {
+  box.replaceChildren();
+  const W = Math.max(260, box.clientWidth), left = 36, cw = (W - left) / 24;
+  const ch = Math.min(26, Math.max(14, cw)), H = 7 * ch + 22;
+  const max = Math.max(1, ...matrix.flat());
+  const svg = s("svg", {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Minutter per ukedag og time"});
+  matrix.forEach((row, d) => {
+    svg.append(s("text", {x: left - 8, y: d * ch + ch / 2 + 4, class: "tick", "text-anchor": "end"}, WD[d]));
+    row.forEach((v, hr) => {
+      const r = s("rect", {x: left + hr * cw + 1, y: d * ch + 1, width: Math.max(1, cw - 2), height: ch - 2, rx: 2, class: "cell"});
+      r.style.fill = v > 0 ? `color-mix(in oklab, var(--burgundy) ${Math.round(8 + 92 * v / max)}%, var(--cream))` : "var(--cream)";
+      attachTip(r, () => ({title: `${cap(WEEKDAYS[d])} kl. ${pad(hr)}–${pad(hr + 1)}`, rows: [{value: fmt(v) + " min"}]}));
+      svg.append(r);
+    });
+  });
+  for (let hr = 0; hr < 24; hr += 3) svg.append(s("text", {x: left + hr * cw + cw / 2, y: H - 4, class: "tick", "text-anchor": "middle"}, pad(hr)));
+  box.append(svg);
+}
+
+// Segmentert stolpe (HTML): shares = {natt: 0.1, ...}
+function segBar(box, shares, {title} = {}) {
+  box.replaceChildren();
+  for (const p of PARTS) {
+    const v = shares[p] || 0;
+    if (v <= 0) continue;
+    const div = h("div", {class: p, style: {flex: `${v} 1 0`}, tabindex: "0", "aria-label": `${p}: ${pct(v)}`},
+      h("span", {class: "lbl", text: pct(v)}));
+    attachTip(div, () => ({title, rows: PARTS.map(q => ({value: pct(shares[q] || 0), name: q, color: `var(--${q})`}))}));
+    box.append(div);
+  }
+}
+// Fjern prosent-etiketter som ikke får plass i sin bit (verdien står fortsatt i tooltipen)
+function fitLabels(root) {
+  for (const lbl of root.querySelectorAll(".seg .lbl")) {
+    if (lbl.offsetWidth > lbl.parentElement.clientWidth) lbl.remove();
+  }
+}
+
+/* ---------- periodevelger ---------- */
+const keys = DATA.periods.map(p => p.key);
+const years = keys.filter(k => k.length === 4);
+const months = keys.filter(k => k.length === 7);
+const yearSel = $("year"), monthSel = $("month");
+yearSel.append(h("option", {value: "all", text: "All time"}), ...[...years].reverse().map(y => h("option", {value: y, text: y})));
+monthSel.append(h("option", {value: "", text: "Hele året"}), ...MONTHS.map((m, i) => h("option", {value: String(i + 1).padStart(2, "0"), text: cap(m)})));
+
+function currentKey() {
+  const y = yearSel.value, m = monthSel.value;
+  return y === "all" ? "all" : m ? `${y}-${m}` : y;
+}
+function syncPicker(key) {
+  yearSel.value = key === "all" ? "all" : key.slice(0, 4);
+  monthSel.disabled = key === "all";
+  for (const o of monthSel.options) if (o.value) o.disabled = key === "all" || !P[`${yearSel.value}-${o.value}`];
+  monthSel.value = key.length === 7 ? key.slice(5) : "";
+  const list = key === "all" ? [] : key.length === 4 ? years : months, i = list.indexOf(key);
+  $("prev").disabled = i <= 0;
+  $("next").disabled = i < 0 || i >= list.length - 1;
+}
+function step(dir) {
+  const key = currentKey(), list = key.length === 4 ? years : key.length === 7 ? months : [];
+  const i = list.indexOf(key);
+  if (i >= 0 && list[i + dir]) go(list[i + dir]);
+}
+function go(key, animate = true) {
+  if (!P[key]) key = "all";
+  if (location.hash.slice(1) !== key) history.replaceState(null, "", "#" + key);
+  syncPicker(key);
+  render(key, animate);
+}
+yearSel.addEventListener("change", () => {
+  let key = currentKey();
+  if (!P[key]) key = yearSel.value;   // måneden finnes ikke i det nye året -> hele året
+  go(key);
+});
+monthSel.addEventListener("change", () => go(currentKey()));
+$("prev").addEventListener("click", () => step(-1));
+$("next").addEventListener("click", () => step(1));
+addEventListener("keydown", e => {
+  if (e.target.closest("select, input, textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+
+/* ---------- tegn alt for én periode ---------- */
+function countUp(el, to) {
+  if (reduceMotion) { el.textContent = fmt(to); return; }
+  const t0 = performance.now(), dur = 700;
+  const tick = t => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - (1 - k) ** 3;
+    el.textContent = fmt(to * e);
+    if (k < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function rankList(ol, rows, {name, by, val, link}) {
+  ol.replaceChildren();
+  if (!rows.length) { ol.append(h("li", {class: "empty", text: "Ingenting her i denne perioden."})); return; }
+  rows.forEach((r, i) => {
+    const url = link ? link(r) : null;
+    const nameEl = url ? h("a", {href: url, target: "_blank", rel: "noopener", text: name(r)}) : name(r);
+    ol.append(h("li", {},
+      h("span", {class: "pos num", text: String(i + 1)}),
+      h("span", {}, h("span", {class: "name"}, nameEl), by ? h("span", {class: "by", text: by(r)}) : null),
+      h("span", {class: "val num", text: val(r)})));
+  });
+}
+
+function timelineLabel(key, label) {
+  if (key.length === 7) return fmtDate(label);
+  const [y, m] = label.split("-").map(Number);
+  return `${cap(MONTHS[m - 1])} ${y}`;
+}
+
+function render(key, animate) {
+  const d = P[key], o = d.overview;
+  const isAll = key === "all", isYear = key.length === 4, isMonth = key.length === 7;
+
+  /* hero */
+  $("title").textContent = isAll ? "All time" : isYear ? key : `${cap(MONTHS[+key.slice(5) - 1])} ${key.slice(0, 4)}`;
+  $("range").textContent = `${fmtDate(d.first_date)} – ${fmtDate(d.last_date)}`;
+  animate ? countUp($("minutes"), o.minutes) : ($("minutes").textContent = fmt(o.minutes));
+  $("hours").textContent = `Det er ${fmt(o.minutes / 60)} timer, eller ${fmt1(o.minutes_per_day)} minutter om dagen.`;
+  const stats = [
+    [fmt(o.plays), "avspillinger"],
+    [fmt(o.unique_tracks), "ulike låter"],
+    [fmt(o.unique_artists), "artister"],
+    [`${fmt(o.days_listened)} av ${fmt(o.days_in_period)}`, "dager med musikk"],
+  ];
+  if (o.podcast_minutes) stats.push([fmt(o.podcast_minutes), "minutter podkast"]);
+  $("stats").replaceChildren(...stats.map(([v, l]) => h("div", {}, h("dd", {text: v}), h("dt", {text: l}))));
+
+  /* topplister */
+  rankList($("tracks"), d.top_tracks, {name: r => r.track, by: r => r.artist, val: r => fmt(r.plays), link: r => spotifyUrl(r.uri)});
+  rankList($("artists"), d.top_artists, {name: r => r.artist, val: r => fmt(r.minutes)});
+  rankList($("albums"), d.top_albums, {name: r => r.album, by: r => r.artist, val: r => fmt(r.minutes)});
+
+  /* over tid – bare innenfor datoene du har data */
+  const lo = isMonth ? d.first_date : d.first_date.slice(0, 7), hi = isMonth ? d.last_date : d.last_date.slice(0, 7);
+  const tl = d.timeline.filter(r => r.label >= lo && r.label <= hi);
+  $("time-sub").textContent = isMonth ? "Minutter per dag" : isAll ? `Minutter per måned, fra ${fmtDate(d.first_date)}` : "Minutter per måned";
+  columnChart($("timeline"), tl.map(r => ({value: r.minutes, label: r.label})), {
+    height: 240,
+    aria: $("time-sub").textContent,
+    xLabel: (r, i) => {
+      if (isMonth) { const day = +r.label.slice(8); return day === 1 || day % 5 === 0 ? String(day) : null; }
+      if (isYear) return MON[+r.label.slice(5) - 1];
+      return r.label.endsWith("-01") || i === 0 ? r.label.slice(0, 4) : null;
+    },
+    tipFn: r => ({title: timelineLabel(key, r.label), rows: [{value: fmt(r.value) + " min"}]}),
+  });
+  const buckets = d.top_track_per_bucket;
+  $("bucket-block").hidden = !buckets || !buckets.length;
+  if (buckets && buckets.length) {
+    $("bucket-title").textContent = isAll ? "Årets låt" : "Månedens låt";
+    $("buckets").replaceChildren(...buckets.map(b => h("div", {class: "bucket"},
+      h("div", {class: "when", text: isAll ? b.label : cap(MONTHS[+b.label.slice(5) - 1])}),
+      h("span", {class: "name", text: b.track, title: b.track}),
+      h("div", {class: "by", text: `${b.artist}, ${fmt(b.plays)} ganger`}))));
+  }
+
+  /* døgnet */
+  const fh = d.favorite_hour;
+  $("day-lead").textContent = `Du hører mest på musikk mellom kl. ${pad(fh)} og ${pad(fh + 1)}, og ${WEEKDAYS[d.favorite_weekday]} er dagen du lytter mest.`;
+  const soft = "color-mix(in oklab, var(--burgundy) 42%, var(--blue))";
+  columnChart($("hours-chart"), d.minutes_per_hour.map((v, hr) => ({value: v, hr, color: hr === fh ? "var(--burgundy)" : soft})), {
+    height: 220, aria: "Minutter per time",
+    xLabel: r => r.hr % 3 === 0 ? pad(r.hr) : null,
+    tipFn: r => ({title: `Kl. ${pad(r.hr)}–${pad(r.hr + 1)}`, rows: [{value: fmt(r.value) + " min"}]}),
+  });
+  heatmap($("heat"), d.week_heatmap);
+
+  const total = d.dayparts.reduce((a, p) => a + p.minutes, 0) || 1;
+  const shares = Object.fromEntries(d.dayparts.map(p => [p.name, p.minutes / total]));
+  segBar($("seg"), shares, {title: "Andel av minuttene"});
+  $("parts").replaceChildren(...d.dayparts.map(p => h("div", {class: "part"},
+    h("h3", {}, h("span", {class: `key ${p.name}`}), cap(p.name)),
+    h("div", {class: "when", text: `Kl. ${PART_TIME[p.name]}, ${fmt(p.minutes)} min`}),
+    p.top_artists[0] ? h("p", {class: "line"}, h("b", {text: "Mest hørt artist"}), p.top_artists[0].artist) : null,
+    p.top_tracks[0] ? h("p", {class: "line"}, h("b", {text: "Mest spilte låt"}), `${p.top_tracks[0].track}, ${p.top_tracks[0].artist}`) : null)));
+
+  const trend = d.daypart_trend;
+  $("trend-block").hidden = !trend || trend.length < 2;
+  if (trend && trend.length >= 2) {
+    $("trend-sub").textContent = isAll ? "Andel av lyttingen per år" : "Andel av lyttingen per måned";
+    $("trend-legend").replaceChildren(...PARTS.map(p => h("span", {}, h("span", {class: `key ${p}`}), `${cap(p)} ${PART_TIME[p]}`)));
+    const rows = [];
+    for (const r of trend) {
+      const label = isAll ? r.label : cap(MON[+r.label.slice(5) - 1]);
+      const bar = h("div", {class: "seg"});
+      segBar(bar, r, {title: isAll ? r.label : cap(MONTHS[+r.label.slice(5) - 1])});
+      rows.push(h("div", {class: "lab", text: label}), bar);
+    }
+    $("trend").replaceChildren(...rows);
+  }
+
+  /* rekorder */
+  const facts = [];
+  facts.push(["Største lyttedag", fmtDate(d.biggest_day.date), `${fmt(d.biggest_day.minutes)} minutter, eller ${fmt1(d.biggest_day.minutes / 60)} timer.`]);
+  if (d.longest_streak) facts.push(["Lengste streak", `${fmt(d.longest_streak.days)} dager på rad`, `Fra ${fmtDate(d.longest_streak.from)} til ${fmtDate(d.longest_streak.to)}.`]);
+  if (d.first_song) {
+    const [date, time] = d.first_song.time.split(" ");
+    facts.push([isAll ? "Den aller første låta" : "Første låt i perioden", d.first_song.track, `${d.first_song.artist}, ${fmtDate(date)} kl. ${time}.`]);
+  }
+  if (d.skips) {
+    const ms = d.skips.most_skipped;
+    facts.push(["Hoppet over", pct(d.skips.skip_rate), `av låtene du startet. Mest skippet: ${ms.track} av ${ms.artist}, ${fmt(ms.skips)} ganger.`]);
+  }
+  $("facts").replaceChildren(...facts.map(([l, big, det]) => h("div", {class: "fact"},
+    h("div", {class: "label", text: l}), h("div", {class: "big", text: big}), h("div", {class: "detail", text: det}))));
+
+  /* nye artister */
+  const na = d.new_artists;
+  $("discover").hidden = !na || !na.length;
+  if (na && na.length) $("newlist").replaceChildren(...na.map(r => h("li", {},
+    h("span", {class: "name", text: r.artist}), h("span", {class: "val num", text: `${fmt(r.minutes)} min`}))));
+
+  fitLabels(document);
+}
+
+/* ---------- start ---------- */
+const all = P.all;
+$("brand").textContent = DATA.title || "Min Wrapped";
+$("foot").textContent = `Laget fra Spotify-eksporten din: ${fmt(DATA.rows || all.overview.plays)} avspillinger fra ${fmtDate(all.first_date)} til ${fmtDate(all.last_date)}. Tallene ble regnet ut ${fmtDate(DATA.generated.slice(0, 10))}.`;
+const start = location.hash.slice(1);
+go(P[start] ? start : (years[years.length - 1] || "all"));
+addEventListener("hashchange", () => { const k = location.hash.slice(1); if (P[k] && k !== currentKey()) go(k); });
+let rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => render(currentKey(), false), 150); });
+document.fonts && document.fonts.ready.then(() => render(currentKey(), false));
+})();
+</script>
+</body>
+</html>
