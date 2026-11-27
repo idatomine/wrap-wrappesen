@@ -1,6 +1,6 @@
 # wrap-wrappesen
 
-Min egen Spotify Wrapped, laget fra lyttehistorikken jeg kan laste ned fra Spotify.
+Min egen Spotify Wrapped (fordi jeg klarer ikke å vente til desember hvert år. Laget fra lyttehistorikken man kan laste ned fra Spotify.
 Velg en måned, et helt år eller all time.
 
 ## Kom i gang
